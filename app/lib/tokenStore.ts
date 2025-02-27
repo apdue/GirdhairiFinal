@@ -20,12 +20,6 @@ if (!global.__tokenStore) {
     pageToken: '',
     pageId: ''
   };
-
-  // Initialize with environment variables if available
-  if (process.env.FACEBOOK_PAGE_TOKEN && process.env.FACEBOOK_PAGE_ID) {
-    global.__tokenStore.pageToken = process.env.FACEBOOK_PAGE_TOKEN;
-    global.__tokenStore.pageId = process.env.FACEBOOK_PAGE_ID;
-  }
 }
 
 export function getTokens(): TokenStore {
