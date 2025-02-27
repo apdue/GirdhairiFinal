@@ -1,0 +1,265 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 245, 247, 250;
+  --background-end-rgb: 255, 255, 255;
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --secondary-color: #10b981;
+  --secondary-hover: #059669;
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --card-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.1), 0 2px 8px -2px rgba(0, 0, 0, 0.05);
+  --card-shadow-hover: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  --icon-size: 1.25rem;
+}
+
+body {
+  color: var(--text-primary);
+  background: linear-gradient(
+    to bottom right,
+    rgb(var(--background-start-rgb)),
+    rgb(var(--background-end-rgb))
+  );
+  min-height: 100vh;
+  font-family: var(--font-outfit), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Modern UI Components */
+@layer components {
+  .btn {
+    @apply px-4 py-2.5 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-sm;
+  }
+  
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-500;
+  }
+  
+  .btn-secondary {
+    @apply bg-emerald-600 hover:bg-emerald-700 text-white focus:ring-emerald-500;
+  }
+  
+  .card {
+    @apply bg-white p-6 rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300;
+  }
+  
+  .form-select {
+    @apply appearance-none p-3 pl-4 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full bg-white shadow-sm transition-colors duration-200;
+  }
+  
+  .form-input {
+    @apply p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full;
+  }
+}
+
+/* Modern section titles and icons */
+h1 {
+  @apply text-3xl font-bold text-indigo-900 mb-6 pb-4 border-b;
+}
+
+h2.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.025em;
+}
+
+/* Comprehensive icon styling */
+svg {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+/* Fix for SVG icons */
+svg.icon, 
+h2.section-title svg.icon,
+.icon {
+  width: var(--icon-size) !important;
+  height: var(--icon-size) !important;
+  margin-right: 0.625rem !important;
+  color: var(--primary-color) !important;
+  flex-shrink: 0 !important;
+}
+
+/* Specific icon size overrides */
+.w-4, .h-4 {
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+.w-5, .h-5 {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+}
+
+.w-6, .h-6 {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+}
+
+.w-8, .h-8 {
+  width: 2rem !important;
+  height: 2rem !important;
+}
+
+.w-12, .h-12 {
+  width: 3rem !important;
+  height: 3rem !important;
+}
+
+/* Modern card hover effects */
+.hover-card {
+  @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+}
+
+/* Modern table styling */
+table {
+  @apply w-full border-collapse;
+}
+
+thead th {
+  @apply bg-gray-50 text-xs font-medium text-gray-700 uppercase tracking-wider px-6 py-3 text-left;
+}
+
+tbody td {
+  @apply px-6 py-4 whitespace-nowrap text-sm text-gray-600 border-t border-gray-200;
+}
+
+tbody tr {
+  @apply hover:bg-gray-50 transition-colors duration-150;
+}
+
+/* Modern form elements */
+input, select, textarea {
+  @apply transition-all duration-200;
+}
+
+/* Modern buttons with hover effects */
+button {
+  @apply transition-all duration-200;
+}
+
+/* Modern status indicators */
+.status-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.status-success {
+  @apply bg-green-100 text-green-800;
+}
+
+.status-warning {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.status-error {
+  @apply bg-red-100 text-red-800;
+}
+
+.status-info {
+  @apply bg-blue-100 text-blue-800;
+}
+
+/* Improved dropdown styling */
+.pointer-events-none svg {
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+/* Animation enhancements */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Loading spinner improvements */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Glass effect for cards */
+.glass-card {
+  @apply bg-white bg-opacity-80 backdrop-blur-sm border border-white border-opacity-40 shadow-lg;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c5c5c5;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
+}
+
+/* Improved focus styles */
+*:focus-visible {
+  @apply outline-none ring-2 ring-indigo-500 ring-offset-2;
+}
+
+/* Improved table styles */
+.modern-table {
+  @apply overflow-hidden rounded-lg border border-gray-200 shadow-md;
+}
+
+.modern-table thead {
+  @apply bg-gradient-to-r from-indigo-50 to-blue-50;
+}
+
+.modern-table th {
+  @apply px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider;
+}
+
+.modern-table td {
+  @apply px-6 py-4 whitespace-nowrap text-sm text-gray-600 border-t border-gray-200;
+}
+
+.modern-table tr {
+  @apply hover:bg-gray-50 transition-colors duration-150;
+}
+
+/* Improved button styles */
+.btn-modern {
+  @apply px-4 py-2.5 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-sm;
+}
+
+.btn-modern-primary {
+  @apply bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white focus:ring-indigo-500;
+}
+
+.btn-modern-secondary {
+  @apply bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white focus:ring-emerald-500;
+}

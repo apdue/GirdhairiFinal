@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Download Test Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2563eb;
+            margin-top: 0;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+        .status-message {
+            background-color: #dbeafe;
+            border-left: 4px solid #2563eb;
+            padding: 12px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .error-message {
+            background-color: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 12px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .date-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        .date-inputs input {
+            flex: 1;
+        }
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        button:disabled {
+            background-color: #93c5fd;
+            cursor: not-allowed;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .green-button {
+            background-color: #10b981;
+        }
+        .green-button:hover {
+            background-color: #059669;
+        }
+        .hidden {
+            display: none;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lead Download Test Page</h1>
+        <p>If you can see this page, static files are being served correctly.</p>
+        <p><strong>UPDATES ARE WORKING - CREATED AT Wed Feb 26 19:41:43 IST 2025</strong></p>
+        
+        <div class="form-group">
+            <label for="account-select">Select Account:</label>
+            <select id="account-select">
+                <option value="">-- Select an Account --</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="page-select">Select Page:</label>
+            <select id="page-select" disabled>
+                <option value="">-- Select a Page --</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="form-select">Select Lead Form:</label>
+            <select id="form-select" disabled>
+                <option value="">-- Select a Form --</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="time-filter">Time Filter:</label>
+            <select id="time-filter">
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="all">All Time</option>
+                <option value="custom">Custom Date Range</option>
+            </select>
+        </div>
+        
+        <div class="form-group date-inputs hidden" id="date-range-container">
+            <div>
+                <label for="start-date">Start Date:</label>
+                <input type="date" id="start-date">
+            </div>
+            <div>
+                <label for="end-date">End Date:</label>
+                <input type="date" id="end-date">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="format-select">Download Format:</label>
+            <select id="format-select">
+                <option value="excel">Excel (.xlsx)</option>
+                <option value="csv">CSV</option>
+            </select>
+        </div>
+        
+        <div id="status-message" class="status-message hidden"></div>
+        <div id="error-message" class="error-message hidden"></div>
+        
+        <div class="button-group">
+            <button id="download-btn" disabled>Download Leads</button>
+            <button id="download-yesterday-btn" class="green-button" disabled>Download Feb 24, 2025 Leads</button>
+        </div>
+        
+        <div id="loader" class="loader hidden"></div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const accountSelect = document.getElementById('account-select');
+        const pageSelect = document.getElementById('page-select');
+        const formSelect = document.getElementById('form-select');
+        const timeFilter = document.getElementById('time-filter');
+        const dateRangeContainer = document.getElementById('date-range-container');
+        const startDate = document.getElementById('start-date');
+        const endDate = document.getElementById('end-date');
+        const formatSelect = document.getElementById('format-select');
+        const downloadBtn = document.getElementById('download-btn');
+        const downloadYesterdayBtn = document.getElementById('download-yesterday-btn');
+        const statusMessage = document.getElementById('status-message');
+        const errorMessage = document.getElementById('error-message');
+        const loader = document.getElementById('loader');
+
+        // State
+        let accounts = [];
+        let pages = [];
+        let forms = [];
+        let allLeads = [];
+        let isLoading = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAccounts();
+            setupEventListeners();
+        });
+
+        // Event Listeners
+        function setupEventListeners() {
+            accountSelect.addEventListener('change', handleAccountSelect);
+            pageSelect.addEventListener('change', handlePageSelect);
+            formSelect.addEventListener('change', handleFormSelect);
+            timeFilter.addEventListener('change', handleTimeFilterChange);
+            downloadBtn.addEventListener('click', () => handleDownloadLeads(false));
+            downloadYesterdayBtn.addEventListener('click', () => handleDownloadLeads(true));
+            startDate.addEventListener('change', validateDateRange);
+            endDate.addEventListener('change', validateDateRange);
+        }
+
+        // Fetch Accounts
+        async function fetchAccounts() {
+            showLoader();
+            showStatus('Fetching accounts...');
+            
+            try {
+                const response = await fetch('/api/get-accounts');
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch accounts');
+                }
+                
+                accounts = await response.json();
+                
+                // Populate account select
+                accountSelect.innerHTML = '<option value="">-- Select an Account --</option>';
+                accounts.forEach(account => {
+                    const option = document.createElement('option');
+                    option.value = account.id;
+                    option.textContent = account.name;
+                    accountSelect.appendChild(option);
+                });
+                
+                showStatus(`${accounts.length} accounts loaded`);
+            } catch (error) {
+                showError(`Error fetching accounts: ${error.message}`);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // Handle Account Selection
+        async function handleAccountSelect() {
+            const accountId = accountSelect.value;
+            
+            // Reset dependent selects
+            pageSelect.innerHTML = '<option value="">-- Select a Page --</option>';
+            pageSelect.disabled = true;
+            formSelect.innerHTML = '<option value="">-- Select a Form --</option>';
+            formSelect.disabled = true;
+            downloadBtn.disabled = true;
+            downloadYesterdayBtn.disabled = true;
+            
+            if (!accountId) return;
+            
+            showLoader();
+            showStatus('Fetching pages...');
+            
+            try {
+                const response = await fetch(`/api/get-pages?accountId=${accountId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch pages');
+                }
+                
+                pages = await response.json();
+                
+                // Populate page select
+                pageSelect.innerHTML = '<option value="">-- Select a Page --</option>';
+                pages.forEach(page => {
+                    const option = document.createElement('option');
+                    option.value = page.id;
+                    option.textContent = page.name;
+                    pageSelect.appendChild(option);
+                });
+                
+                pageSelect.disabled = false;
+                showStatus(`${pages.length} pages loaded`);
+            } catch (error) {
+                showError(`Error fetching pages: ${error.message}`);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // Handle Page Selection
+        async function handlePageSelect() {
+            const pageId = pageSelect.value;
+            
+            // Reset form select
+            formSelect.innerHTML = '<option value="">-- Select a Form --</option>';
+            formSelect.disabled = true;
+            downloadBtn.disabled = true;
+            downloadYesterdayBtn.disabled = true;
+            
+            if (!pageId) return;
+            
+            showLoader();
+            showStatus('Fetching lead forms...');
+            
+            try {
+                const response = await fetch(`/api/fetch-lead-forms?pageId=${pageId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch lead forms');
+                }
+                
+                forms = await response.json();
+                
+                // Populate form select
+                formSelect.innerHTML = '<option value="">-- Select a Form --</option>';
+                forms.forEach(form => {
+                    const option = document.createElement('option');
+                    option.value = form.id;
+                    option.textContent = form.name;
+                    formSelect.appendChild(option);
+                });
+                
+                formSelect.disabled = false;
+                showStatus(`${forms.length} lead forms loaded`);
+            } catch (error) {
+                showError(`Error fetching lead forms: ${error.message}`);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // Handle Form Selection
+        function handleFormSelect() {
+            const formId = formSelect.value;
+            
+            downloadBtn.disabled = !formId;
+            downloadYesterdayBtn.disabled = !formId;
+            
+            if (formId) {
+                showStatus('Form selected. Ready to download leads.');
+            }
+        }
+
+        // Handle Time Filter Change
+        function handleTimeFilterChange() {
+            const selectedFilter = timeFilter.value;
+            
+            if (selectedFilter === 'custom') {
+                dateRangeContainer.classList.remove('hidden');
+                validateDateRange();
+            } else {
+                dateRangeContainer.classList.add('hidden');
+                downloadBtn.disabled = !formSelect.value;
+            }
+        }
+
+        // Validate Date Range
+        function validateDateRange() {
+            if (timeFilter.value !== 'custom') return;
+            
+            const start = startDate.value;
+            const end = endDate.value;
+            
+            downloadBtn.disabled = !formSelect.value || !start || !end;
+            
+            if (start && end && new Date(start) > new Date(end)) {
+                showError('Start date cannot be after end date');
+                downloadBtn.disabled = true;
+            } else {
+                hideError();
+            }
+        }
+
+        // Handle Download Leads
+        async function handleDownloadLeads(isYesterdayOnly) {
+            const formId = formSelect.value;
+            
+            if (!formId) {
+                showError('Please select a form');
+                return;
+            }
+            
+            showLoader();
+            showStatus(`Preparing leads for download...`);
+            hideError();
+            
+            try {
+                let requestBody = {
+                    formId: formId,
+                    format: formatSelect.value
+                };
+                
+                if (isYesterdayOnly) {
+                    requestBody.timeFilter = 'yesterday';
+                } else {
+                    requestBody.timeFilter = timeFilter.value;
+                    
+                    if (timeFilter.value === 'custom') {
+                        requestBody.startDate = startDate.value;
+                        requestBody.endDate = endDate.value;
+                    }
+                }
+                
+                const response = await fetch('/api/download-leads', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    try {
+                        const errorJson = JSON.parse(errorText);
+                        throw new Error(errorJson.error || `Failed to download leads: ${response.status}`);
+                    } catch {
+                        throw new Error(`Failed to download leads: ${errorText}`);
+                    }
+                }
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                
+                const selectedForm = forms.find(f => f.id === formId);
+                const formName = selectedForm ? selectedForm.name : formId;
+                const timeString = isYesterdayOnly ? 'yesterday' : timeFilter.value;
+                const fileExtension = formatSelect.value === 'csv' ? 'csv' : 'xlsx';
+                
+                a.download = `leads_${formName}_${timeString}_${new Date().toISOString().split('T')[0]}.${fileExtension}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                showStatus('Download complete!');
+            } catch (error) {
+                console.error('Error downloading leads:', error);
+                showError(`Error downloading leads: ${error.message}`);
+                showStatus('Download failed');
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // Helper Functions
+        function showStatus(message) {
+            statusMessage.textContent = message;
+            statusMessage.classList.remove('hidden');
+        }
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+        
+        function hideError() {
+            errorMessage.classList.add('hidden');
+        }
+        
+        function showLoader() {
+            isLoading = true;
+            loader.classList.remove('hidden');
+            downloadBtn.disabled = true;
+            downloadYesterdayBtn.disabled = true;
+        }
+        
+        function hideLoader() {
+            isLoading = false;
+            loader.classList.add('hidden');
+            
+            // Re-enable buttons if form is selected
+            if (formSelect.value) {
+                downloadBtn.disabled = timeFilter.value === 'custom' && (!startDate.value || !endDate.value);
+                downloadYesterdayBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
